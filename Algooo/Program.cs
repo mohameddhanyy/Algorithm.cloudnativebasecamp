@@ -5,7 +5,7 @@
         static void Main(string[] args)
         {
             //Insertion Sort 
-            int[] arr = { 5, 2, 4, 7, 1, 3, 6, 8 };
+            int[] arr = { 5, 2, 4, 7, 1, 3, 6, 8, 11, 16, 55 };
             //InsertionSort(arr);
             //foreach (var item in arr)
             //{
@@ -13,15 +13,25 @@
             //}
 
             //Merge Sort
-            Console.WriteLine("Original array:");
-            Console.WriteLine(string.Join(" ", arr));
+            //Console.WriteLine("Original array:");
+            //Console.WriteLine(string.Join(" ", arr));
 
             //Call merge sort
             MergeSort(arr);
 
             // Output sorted array
-            Console.WriteLine("\nSorted array:");
-            Console.WriteLine(string.Join(" ", arr));
+            //Console.WriteLine("\nSorted array:");
+            //Console.WriteLine(string.Join(" ", arr));
+
+            int[] arr2 = { 1, 3, 5, 9, 11, 20, 43, 88, 90 };
+            //int result = BinarySearch(arr2, 90, 0, arr.Length - 1);
+            int result = BinarySearch(arr2, 99);
+            //Console.WriteLine(result);
+
+            // Sergrager Positive and Negative Numbers 
+            int[] arr3 = { 5, 2, -11, 1, -1, -6, -4 };
+            SegregateRecurtion(arr3);
+            Console.WriteLine(String.Join(",", arr3));
 
         }
 
@@ -46,6 +56,7 @@
             }
             return arr;
         }
+
         //public static void MergeSort(int[] arr)
         //{
         //    if (arr.Length <= 1)
@@ -157,6 +168,118 @@
                 arr[k] = right[j];
                 j++;
                 k++;
+            }
+
+        }
+
+        //private static int BinarySearch(int[] arr , int key , int low , int high)
+        //{
+        //    int mid = (low + high)/2;
+        //    if (arr[mid] == key)
+        //        return mid;
+        //    else if (arr[mid] > key)
+        //        return BinarySearch(arr, key, low, mid - 1);
+        //    else 
+        //        return BinarySearch(arr, key, mid + 1, arr.Length - 1);
+        //}
+
+        private static int BinarySearch(int[] arr, int key)
+        {
+            int low = 0;
+            int high = arr.Length - 1;
+            while (low <= high)
+            {
+                int mid = (low + high) / 2;
+                if (arr[mid] == key)
+                    return mid;
+                else if (arr[mid] < key)
+                    low = mid + 1;
+                else
+                    high = mid - 1;
+            }
+            return -1;
+        }
+
+        private static int[] SegragetePN(int[] arr)
+        {
+            for (int i = 1; i < arr.Length; i++)
+            {
+                int key;
+                if (arr[i] > 0)
+                    continue;
+                if (arr[i] < 0)
+                {
+                    key = arr[i];
+                    int j;
+                    for (j = i - 1; j >= 0; j--)
+                    {
+                        if (arr[j] > 0)
+                            arr[j + 1] = arr[j];
+                        else
+                            break;
+                    }
+                    arr[j + 1] = key;
+                }
+            }
+            return arr;
+        }
+
+
+        private static void SegregateRecurtion(int[] arr)
+        {
+            if (arr.Length <= 1)
+                return;
+            int mid = arr.Length / 2;
+            int[] leftArr = new int[mid];
+            int[] rightArr = new int[arr.Length - mid];
+
+            Array.Copy(arr, 0, leftArr, 0, mid);
+            Array.Copy(arr, mid, rightArr, 0, arr.Length - mid);
+
+            SegregateRecurtion(leftArr);
+            SegregateRecurtion(rightArr);
+            Segregate(arr, leftArr, rightArr);
+        }
+
+        private static void Segregate(int[] arr, int[] left, int[] right)
+        {
+            int k = 0;
+            for (int i = 0; i < left.Length; i++)
+            {
+                if (left[i] < 0)
+                {
+                    arr[k] = left[i];
+                    k++;
+                }
+            }
+
+
+            for (int j = 0; j < right.Length; j++)
+            {
+                if (right[j] < 0)
+                {
+                    arr[k] = right[j];
+                    k++;
+                }
+            }
+
+            for (int i = 0; i < left.Length; i++)
+            {
+                if (left[i] > 0)
+                {
+                    arr[k] = left[i];
+                    k++;
+                }
+            }
+
+            for (int j = 0; j < right.Length; j++)
+            {
+                if (right[j] > 0)
+                {
+                    arr[k] = right[j];
+                    k++;
+                }
+
             }
 
         }
