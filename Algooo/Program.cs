@@ -237,6 +237,8 @@
             Array.Copy(arr, mid, rightArr, 0, arr.Length - mid);
 
             SegregateRecurtion(leftArr);
+            SegregateRecurtion(leftArr);
+            SegregateRecurtion(leftArr);
             SegregateRecurtion(rightArr);
             Segregate(arr, leftArr, rightArr);
         }
