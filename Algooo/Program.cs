@@ -31,7 +31,20 @@
             // Sergrager Positive and Negative Numbers 
             int[] arr3 = { 5, 2, -11, 1, -1, -6, -4 };
             SegregateRecurtion(arr3);
-            Console.WriteLine(String.Join(",", arr3));
+            //Console.WriteLine(String.Join(",", arr3))
+            //
+            #region Dynamic Programming
+            // just tool to make recursive good more efficient 
+
+            int x = 8;
+            int result1 = fibonacci_DP_Memoization(x);
+            int result2 = fibonacci_DP_Tabulation(x);
+            Console.WriteLine(result2);
+
+
+
+
+            #endregion
 
         }
 
@@ -284,6 +297,32 @@
 
             }
 
+        }
+
+
+
+        // Dynamic Programming using Memoizatoin(From Top to Down) to Efficint Recursion
+        public static int[] memo = new int[100];
+        public static int fibonacci_DP_Memoization(int x)
+        {
+            if (x <= 1) return x; 
+            if (memo[x]!=0)
+                return memo[x];
+            memo[x] = fibonacci_DP_Memoization(x-1)+fibonacci_DP_Memoization(x-2);
+            return memo[x];
+        }
+
+        // Dynamic Programming using Tabulation or Bottom's up to Efficient Recursion
+
+        public static int fibonacci_DP_Tabulation(int x)
+        {
+            memo[0] = 0;
+            memo[1] = 1;
+            for (int i = 2; i <= x; i++)
+            {
+                memo[i] = memo[i - 1] + memo[i - 2];
+            }
+            return memo[x];
         }
     }
 }
