@@ -63,7 +63,7 @@ namespace Algooo
 
 
             // Characters Frequency 
-             CharactersFrequency("Hello World");
+            //CharactersFrequency("Hello World");
 
 
             // Huffman Coding
@@ -71,11 +71,20 @@ namespace Algooo
 
             Huffman huff = new Huffman(msg);
 
-            foreach (char k in huff.codes.Keys)
-            {
-                Console.Write(k + " ");
-                Console.WriteLine(huff.codes[k]);
-            }
+            //foreach (char k in huff.codes.Keys)
+            //{
+            //    Console.Write(k + " ");
+            //    Console.WriteLine(huff.codes[k]);
+            //}
+
+
+
+            // Fractional Knapsack Problem
+            int[] weight = { 10, 30, 20, 50 };
+            int[] value = { 40, 30, 80, 70 };
+            int capacity = 60;
+
+            Console.WriteLine("Maximum value that " + "can be obtained is " + getMax(weight, value, capacity));
 
             #endregion
 
@@ -388,7 +397,7 @@ namespace Algooo
             Hashtable hashtable = new Hashtable();
             for (int i = 0; i < message.Length; i++)
             {
-                if (hashtable[message[i]]==null)
+                if (hashtable[message[i]] == null)
                 {
                     hashtable[message[i]] = 1;
                 }
@@ -403,86 +412,68 @@ namespace Algooo
                 Console.WriteLine($"{item} , {hashtable[item]}");
             }
         }
-            #endregion
+
+        //Fractional Knapsack Problem
+        static double getMax(int[] weight, int[] value, int capacity)
+        {
+
+            int n = weight.Length;
+
+            Item[] list = new Item[n];
+
+            for (int i = 0; i < n; i++)
+            {
+                list[i] = new Item(weight[i], value[i]);
+            }
+
+            Array.Sort(list, new myComparator());
+
+            double ans = 0;
+
+            for (int i = 0; i < n; i++)
+            {
+                int wt = list[i].weight;
+                int val = list[i].value;
+                double valuePerUnitWeight = list[i].valuePerUnitWeight;
+                if (capacity >= wt)
+                {
+                    ans += val;
+                    capacity -= wt;
+                }
+                else
+                {
+                    ans += valuePerUnitWeight * capacity;
+                    capacity = 0;
+                    break;
+                }
+            }
+            return ans;
+        }
+        #endregion
     }
 }
 
-public class HeapNode
+class Item
 {
-    public char data;
-    public int freq;
-    public HeapNode left;
-    public HeapNode right;
-    public HeapNode(char data, int freq)
+    public int weight, value;
+    public double valuePerUnitWeight;
+
+    public Item(int weight, int value)
     {
-        left = right = null;
-        this.data = data;
-        this.freq = freq;
+        this.weight = weight;
+        this.value = value;
+        valuePerUnitWeight = (double)(value) / (weight);
     }
 }
-
-public class Huffman
+class myComparator : IComparer
 {
-    private char internal_char = (char)0;
-    public Hashtable codes = new Hashtable();
-    private PriorityQueue<HeapNode, int> minHeap = new PriorityQueue<HeapNode, int>();
-
-    public Huffman(string message)
+    public int Compare(Object ob1, Object ob2)
     {
-        Hashtable freqHash = new Hashtable();
-        int i;
-        for (i = 0; i < message.Length; i++)
-        {
-            if (freqHash[message[i]] == null)
-            {
-                freqHash[message[i]] = 1;
-            }
-            else
-            {
-                freqHash[message[i]] = (int)freqHash[message[i]] + 1;
-            }
-        }
+        Item i1 = (Item)(ob1);
+        Item i2 = (Item)(ob2);
 
-        i = 0;
-        foreach (char k in freqHash.Keys)
-        {
-            HeapNode newNode = new HeapNode(k, (int)freqHash[k]);
-            minHeap.Enqueue(newNode, (int)freqHash[k]);
-            i++;
-        }
-
-        HeapNode top, left, right;
-        int newFreq;
-        while (minHeap.Count != 1)
-        {
-            left = minHeap.Dequeue();
-            right = minHeap.Dequeue();
-            newFreq = left.freq + right.freq;
-            top = new HeapNode(internal_char, newFreq);
-            top.right = right;
-            top.left = left;
-            minHeap.Enqueue(top, newFreq);
-
-        }
-
-        this.generateCodes(minHeap.Peek(), "");
-
-    }
-
-    private void generateCodes(HeapNode node, string str)
-    {
-        if (node == null)
-        {
-            return;
-        }
-        if (node.data != internal_char)
-        {
-            codes[node.data] = str;
-        }
-
-        generateCodes(node.left, str + "0");
-        generateCodes(node.right, str + "1");
-
-
+        if (i1.valuePerUnitWeight < i2.valuePerUnitWeight)
+            return 1;
+        return -1;
     }
 }
