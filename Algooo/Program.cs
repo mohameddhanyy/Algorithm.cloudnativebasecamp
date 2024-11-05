@@ -1,4 +1,6 @@
-﻿namespace Algooo
+﻿using System.Collections;
+
+namespace Algooo
 {
     internal class Program
     {
@@ -39,10 +41,41 @@
             int x = 8;
             int result1 = fibonacci_DP_Memoization(x);
             int result2 = fibonacci_DP_Tabulation(x);
-            Console.WriteLine(result2);
+            //Console.WriteLine(result2);
+            #endregion
 
 
+            #region Greedy Algorithms
+            ///selecting the best option available at the moment
+            ///The algorithm never reverses the earlier decision even if the choice is wrong. It works in a top-down approach
+            ///just handle best local 
+            ///work if problem has 1=> property is called greedy choice property 
+            ///                    2=>If the optimal overall solution to the problem corresponds to the optimal solution to its subproblems
+            ///                    
 
+            // Activity Solution Problem
+
+            int[] sessions = new int[6];
+            int[] starts = new int[6] { 9, 10, 11, 12, 13, 15 };
+            int[] ends = new int[6] { 11, 11, 12, 14, 15, 16 };
+            //int[] results = ActivitySelection(starts, ends);
+            //Console.WriteLine(String.Join("==", results));
+
+
+            // Characters Frequency 
+             CharactersFrequency("Hello World");
+
+
+            // Huffman Coding
+            string msg = "The output from Huffman's algorithm can be viewed as a variable length code table for encoding a source symbol. The algorithm derives this table from the estimated probability or frequency of occurrence for each possible value of the source symbol. as in other entropy encoding methods, more common symbols are generally represented using fewer bits than less common symbols. Huffman's method can be efficiently implemented, finding a code in time linear to the number of input weights if these weights are sorted. However, although optimal among methods encoding symbols separately, Huffman coding is not always optimal among all compression methods it is replaced with arithmetic coding or asymmetric numeral systems if better compression ratio is required.";
+
+            Huffman huff = new Huffman(msg);
+
+            foreach (char k in huff.codes.Keys)
+            {
+                Console.Write(k + " ");
+                Console.WriteLine(huff.codes[k]);
+            }
 
             #endregion
 
@@ -300,15 +333,16 @@
         }
 
 
+        #region Dynamic Programming
 
         // Dynamic Programming using Memoizatoin(From Top to Down) to Efficint Recursion
         public static int[] memo = new int[100];
         public static int fibonacci_DP_Memoization(int x)
         {
-            if (x <= 1) return x; 
-            if (memo[x]!=0)
+            if (x <= 1) return x;
+            if (memo[x] != 0)
                 return memo[x];
-            memo[x] = fibonacci_DP_Memoization(x-1)+fibonacci_DP_Memoization(x-2);
+            memo[x] = fibonacci_DP_Memoization(x - 1) + fibonacci_DP_Memoization(x - 2);
             return memo[x];
         }
 
@@ -324,5 +358,131 @@
             }
             return memo[x];
         }
+
+
+        #endregion
+
+
+        #region Greedy Algorithm
+        //Activity Solution Problem
+        public static int[] ActivitySelection(int[] starts, int[] ends)
+        {
+            int[] results = new int[starts.Length];
+            results[0] = starts[0];
+            int length = ends.Length;
+            int j = 0, i = 1;
+            for (; i < length; i++)
+            {
+                if (starts[i] >= ends[j])
+                {
+                    results[i] = starts[i];
+                    j = i;
+                }
+            }
+            return results;
+        }
+
+
+        public static void CharactersFrequency(string message)
+        {
+            Hashtable hashtable = new Hashtable();
+            for (int i = 0; i < message.Length; i++)
+            {
+                if (hashtable[message[i]]==null)
+                {
+                    hashtable[message[i]] = 1;
+                }
+                else
+                {
+                    hashtable[message[i]] = (int)hashtable[message[i]] + 1;
+                }
+            }
+
+            foreach (char item in hashtable.Keys)
+            {
+                Console.WriteLine($"{item} , {hashtable[item]}");
+            }
+        }
+            #endregion
+    }
+}
+
+public class HeapNode
+{
+    public char data;
+    public int freq;
+    public HeapNode left;
+    public HeapNode right;
+    public HeapNode(char data, int freq)
+    {
+        left = right = null;
+        this.data = data;
+        this.freq = freq;
+    }
+}
+
+public class Huffman
+{
+    private char internal_char = (char)0;
+    public Hashtable codes = new Hashtable();
+    private PriorityQueue<HeapNode, int> minHeap = new PriorityQueue<HeapNode, int>();
+
+    public Huffman(string message)
+    {
+        Hashtable freqHash = new Hashtable();
+        int i;
+        for (i = 0; i < message.Length; i++)
+        {
+            if (freqHash[message[i]] == null)
+            {
+                freqHash[message[i]] = 1;
+            }
+            else
+            {
+                freqHash[message[i]] = (int)freqHash[message[i]] + 1;
+            }
+        }
+
+        i = 0;
+        foreach (char k in freqHash.Keys)
+        {
+            HeapNode newNode = new HeapNode(k, (int)freqHash[k]);
+            minHeap.Enqueue(newNode, (int)freqHash[k]);
+            i++;
+        }
+
+        HeapNode top, left, right;
+        int newFreq;
+        while (minHeap.Count != 1)
+        {
+            left = minHeap.Dequeue();
+            right = minHeap.Dequeue();
+            newFreq = left.freq + right.freq;
+            top = new HeapNode(internal_char, newFreq);
+            top.right = right;
+            top.left = left;
+            minHeap.Enqueue(top, newFreq);
+
+        }
+
+        this.generateCodes(minHeap.Peek(), "");
+
+    }
+
+    private void generateCodes(HeapNode node, string str)
+    {
+        if (node == null)
+        {
+            return;
+        }
+        if (node.data != internal_char)
+        {
+            codes[node.data] = str;
+        }
+
+        generateCodes(node.left, str + "0");
+        generateCodes(node.right, str + "1");
+
+
     }
 }
